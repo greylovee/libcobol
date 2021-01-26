@@ -1,0 +1,31 @@
+//CREAGDG JOB  CLASS=R,MSGCLASS=X,MSGLEVEL=(1,1),COND=(4,LT),           
+//     REGION=0M,TIME=1440                                              
+//*                                                                     
+//* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//**********************************************************************
+//***** 22-10-2020   FUNCIONA   ****************************************
+//**********************************************************************
+//****** PARA CREAR GDG EN DESARROLLO                                   
+//**********************************************************************
+//PASO01   EXEC PGM=IDCAMS                                              
+//SYSPRINT DD  SYSOUT=*                                                 
+//SYSIN    DD  *                                                        
+  DEFINE GDG (NAME(VAD.OPEALL.ANUAL.NUEVO) -                            
+            NOEMPTY -                                                   
+            SCRATCH -                                                   
+            LIMIT(5))                                                   
+/*                                                                      
+//***LIMIT NUMERO DE VERIONSE DE GDG POSIBLES                           
+//***LIMIT NUMERO DE VERIONSE DE GDG POSIBLES                           
+//*********************************************************************-
+//* CREACION DE LA PRIMERA VERSION GDG. VERSION VACIA.                 -
+//*********************************************************************-
+//STEP002  EXEC  PGM=ICEGENER                                           
+//SYSUT1   DD  DUMMY,                                                   
+//             DCB=(RECFM=FB,LRECL=189)                                 
+//SYSUT2   DD  DSN=VAD.OPEALL.ANUAL.NUEVO(+1),                          
+//             DISP=(,CATLG,DELETE),                                    
+//             SPACE=(506,(500,50),RLSE),AVGREC=K,                      
+//             LRECL=506,RECFM=FB,BLKSIZE=27830                         
+//SYSIN    DD  DUMMY                                                    
+//SYSPRINT DD  SYSOUT=*                                                 
