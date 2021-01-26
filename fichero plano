@@ -1,0 +1,35 @@
+//RMFPLANO JOB ACCTPARM,CLASS=W,MSGCLASS=Q,                             
+//             REGION=0M,COND=(4,LT)                                    
+/* SYSAFF=SYS5                                                          
+//*                                                                     
+//****************************************************************      
+//* LIBRERIAS UTILIZADAS                                                
+//****************************************************************      
+//JOBLIB   DD  DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                       
+//         DD  DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                        
+/*                                                                      
+//**********************************************************************
+//* PASO0000: SE BORRAN LOS FICHEROS DEL PROCESO                       *
+//**********************************************************************
+//PASO0000 EXEC PGM=IDCAMS,COND=(04,LT)                                 
+//SYSPRINT DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+//SYSIN    DD *                                                         
+  DELETE IPRU.OPEALL.NUEVO.D201027                                      
+  IF MAXCC=8 THEN SET MAXCC=0                                           
+  END                                                                   
+//**********************************************************************
+//PASO02 EXEC PGM=SORT                                                  
+//SORTIN DD DSN=VAD.OPEALL.NUEVO.G0009V00,                              
+//            DISP=SHR                                                  
+//SORTOUT DD DSN=IPRU.OPEALL.NUEVO.D201027,                             
+//            DISP=(,CATLG,DELETE),                                     
+//            SPACE=(TRK,(1000,1000),RLSE),                             
+//            RECFM=FB,LRECL=806                                        
+//SYSOUT   DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  SORT   FIELDS=COPY                                                    
+  END                                                                   
+/*                                                                        .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
