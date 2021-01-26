@@ -1,0 +1,29 @@
+//RVAILANZ     JOB CLASS=W,MSGCLASS=Q,COND=(5,LT)                       
+/* SYSAFF=SYS5                                                          
+//JOBLIB DD DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                          
+//       DD DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                          
+//       DD DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                          
+//       DD DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                           
+//*---------------------------------------------------------------------
+//*- EJECUCION DEL PROGRAMA DE PRUEBA DE RUTINAS.                      *
+//*---------------------------------------------------------------------
+//PASO030  EXEC  PGM=IKJEFT1B,DYNAMNBR=20                               
+//*FICHERO ENTIDAD                                                      
+//E0DQENT0 DD DSN=IASI.QBFD2048.BAT1CONS.E0DQENT0,DISP=SHR              
+//*FICHERO DE ENTRADA                                                   
+//E1DQCLNZ DD  DUMMY                                                    
+//SYSTSPRT DD  SYSOUT=*                                                 
+//CEEDUMP  DD  SYSOUT=Z                                                 
+//SYSDBOUT DD  SYSOUT=Z                                                 
+//SYSUDUMP DD  SYSOUT=Z                                                            
+//SYSPRINT DD  SYSOUT=*           
+//SYSOUT   DD  SYSOUT=*           
+//QRLSDB2  DD  SYSOUT=*           
+//SYSIN    DD  *                  
+VL9CC003                          
+//SYSTSIN  DD *                   
+    DSN SYSTEM(DAST)              
+        RUN PROGRAM(VL4CLANZ) -   
+            PLAN   (ASIBATP)      
+    END                           
+/*                                
