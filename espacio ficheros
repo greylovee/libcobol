@@ -1,0 +1,46 @@
+//****************************************************************      
+//* FICHEROS GRANDES QUE NECESITAN MUCHO ESPACIO, Y SE PUEDE CANCELAR   
+//* SIN QUE SE BORRE EL FICHERO                                         
+//****************************************************************      
+//YZIN1301 JOB ACCTPARM,CLASS=W,MSGCLASS=Q,                             
+//             REGION=0M,COND=(4,LT)                                    
+/* SYSAFF=SYS5                                                          
+//*                                                                     
+//****************************************************************      
+//* LIBRERIAS UTILIZADAS                                                
+//****************************************************************      
+//JOBLIB   DD  DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                       
+//         DD  DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                        
+/*                                                                      
+//**********************************************************************
+//* PASO0000: SE BORRAN LOS FICHEROS DEL PROCESO                       *
+//* PASO0000: SE BORRAN LOS FICHEROS DEL PROCESO                       *
+//**********************************************************************
+//PASO0000 EXEC PGM=IDCAMS,COND=(04,LT)                                 
+//SYSPRINT DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  DELETE IPRU.OPEALL.ANUAL.NUEVO                                        
+  IF MAXCC=8 THEN SET MAXCC=0                                           
+  END                                                                   
+//**********************************************************************
+//PASO02 EXEC PGM=SORT                                                  
+//SORTIN DD DSN=VAD.OPEALL.ANUAL.NUEVO(0),                              
+//            DISP=SHR                                                  
+//SORTOUT DD DSN=IPRU.OPEALL.ANUAL.NUEVO,                               
+//*           DISP=(,CATLG,DELETE),                                     
+//            DISP=(,CATLG,CATLG),                                      
+//            SPACE=(CYL,(1000,1000),RLSE),                             
+//            RECFM=FB,LRECL=806                                        
+//SORTWK01 DD UNIT=SYSDA,SPACE=(TRK,(500,100),RLSE)                     
+//SORTWK02 DD UNIT=SYSDA,SPACE=(TRK,(500,100),RLSE)     
+//SORTWK02 DD UNIT=SYSDA,SPACE=(TRK,(500,100),RLSE)     
+//SORTWK03 DD UNIT=SYSDA,SPACE=(TRK,(500,100),RLSE)     
+//SORTWK04 DD UNIT=SYSDA,SPACE=(TRK,(500,100),RLSE)     
+//SYSOUT   DD SYSOUT=*                                  
+//SYSIN    DD *                                         
+  SORT   FIELDS=COPY                                    
+                                                        
+  END                                                   
+/*                                                      
