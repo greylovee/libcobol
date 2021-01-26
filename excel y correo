@@ -1,0 +1,138 @@
+//****************************************************************      
+//* EXTRAER UN FICHERO A EXCEL                                          
+//****************************************************************      
+//YZIN2301 JOB ACCTPARM,CLASS=W,MSGCLASS=Q,                             
+//             REGION=0M,COND=(4,LT)                                    
+/* SYSAFF=SYS5                                                          
+//*                                                                     
+//****************************************************************      
+//* LIBRERIAS UTILIZADAS                                                
+//****************************************************************      
+//JOBLIB   DD  DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                       
+//         DD  DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                        
+/*                                                                      
+//**********************************************************************
+//* PASO0000: SE BORRAN LOS FICHEROS DEL PROCESO                       *
+//**********************************************************************
+//PASO0000 EXEC PGM=IDCAMS,COND=(04,LT)                                 
+//SYSPRINT DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  DELETE IASI.YZ.BAT1SB60.YZAIA066.LOAD66.D%%ODATE                      
+  DELETE IASI.YZ.BAT1SB60.YZAIA066.LOAD01.D%%ODATE                      
+  IF MAXCC=8 THEN SET MAXCC=0                                           
+  END                                                                   
+//**********************************************************************
+//* PASO01 SORT INCLUDE A YZDT066                                       
+//* SOLO EL CONTRATO A EXTRAER                                          
+//**********************************************************************
+//PASO01 EXEC PGM=SORT                                                  
+//SORTIN DD DSN=IASP.YZ.BAT1SB60.YZAPDS66.UNLOAD66.D%%ODATE,            
+//            DISP=SHR                                                  
+//SORTOUT DD DSN=IASI.YZ.BAT1SB60.YZAIA066.LOAD66.D%%ODATE,             
+//            DISP=(,CATLG,DELETE),                                     
+//            SPACE=(TRK,(100,15),RLSE),UNIT=SYSDA,                     
+//            DCB=*.SORTIN                                              
+//SYSOUT   DD SYSOUT=*                     
+//SYSIN    DD *                                                         
+  SORT   FIELDS=COPY                                                    
+  INCLUDE COND=(9,10,CH,EQ,C'9400000198',OR,                            
+                9,10,CH,EQ,C'9400000206',OR,                            
+                9,10,CH,EQ,C'9400000214',OR,                            
+                9,10,CH,EQ,C'9400000222',OR,                            
+                9,10,CH,EQ,C'9400000255',OR,                            
+                9,10,CH,EQ,C'9400000263',OR,                            
+                9,10,CH,EQ,C'9400000271',OR,                            
+                9,10,CH,EQ,C'9400000289',OR,                            
+                9,10,CH,EQ,C'9400000297',OR,                            
+                9,10,CH,EQ,C'9400000305')                               
+                                                                        
+  END                                                                   
+/*                                                                      
+//**********************************************************************
+//* PASO02 DESCOMPRIMIR DATOS                                           
+//*                                                                     
+//**********************************************************************
+//PASO02 EXEC PGM=SORT                                              
+//SORTIN DD DSN=IASI.YZ.BAT1SB60.YZAIA066.LOAD66.D%%ODATE,          
+//            DISP=SHR                                              
+//SORTOUT DD DSN=IASI.YZ.BAT1SB60.YZAIA066.LOAD01.D%%ODATE,         
+//            DISP=(,CATLG,DELETE),                                 
+//            SPACE=(TRK,(100,15),RLSE),UNIT=SYSDA,                 
+//            DCB=*.SORTIN                                          
+//SYSOUT   DD SYSOUT=*                                              
+//SYSIN    DD *                                                     
+  SORT   FIELDS=COPY                                                
+  OUTREC FIELDS=(1,18,C';',                                         
+          19,3,PD,TO=ZD,LENGTH=05,C';',                             
+          22,3,C';',                                                
+          25,2,PD,TO=ZD,LENGTH=03,C';',                             
+          27,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',                     
+          35,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',                     
+          43,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',                     
+          51,3,C';',                                                
+          54,5,PD,EDIT=(TTTTT,TTT),C';',                            
+              59,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',         
+    67,1,C';',                                    
+    68,2,PD,TO=ZD,LENGTH=03,C';',                 
+    70,5,PD,EDIT=(TTTTT,TTT),C';',                
+    75,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',         
+    83,1,C';',                                    
+    84,2,PD,TO=ZD,LENGTH=03,C';',                 
+    86,5,PD,EDIT=(TTTTT,TTT),C';',                
+    91,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',         
+    99,5,PD,EDIT=(TTTTT,TTT),C';',                
+    104,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',        
+    112,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',        
+    120,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',        
+    128,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',        
+    136,8,PD,EDIT=(TTTTTTTTTTTTT,TT),C';',        
+    144,10,C';',                                  
+    154,10,C';',                                  
+    164,10,C';',                                  
+    174,10,C';',                                  
+     ===>                                                  Scroll ===> CSR  
+          174,10,C';',                                                  
+          184,10,C';',                                                  
+          194,4,C';',                                                   
+          198,4,C';',                                                   
+          202,8,C';',                                                   
+          210,8,C';',                                                   
+          218,10,C';',                                                  
+          228,10,C';',                                                  
+          238,3,C';',                                                   
+          241,2,PD,TO=ZD,LENGTH=03,C';',                                
+          243,4,C';',                                                   
+          247,4,C';',                                                   
+          251,8,C';',                                                   
+          259,8,C';',                                                   
+          267,26,C';')                                                  
+                                                                        
+  END                                                                   
+/*                                                                      
+//*---------------------------------------------------------------------
+//*  ENVIO DE CORREO CON EL RESULTADO DE LA ACTUALIZACIóN              -
+//*---------------------------------------------------------------------
+//PASMAIL EXEC P0EML020                                                 
+//CONTROL  DD *                                                         
+COMMAND   SEND                                                          
+CODEPAGE  284                                                           
+TO        GRETTZEL.VARGAS.ARCE@ACCENTURE.COM                            
+SUBJECT   256175                                                        
+ATTACH    DDN:ADJUN01 "TABLA_YZDT066.TXT"                               
+          TRANSLATE                                                     
+          TRANSLATE                                                     
+//*       ZIP                                                           
+/*                                                                      
+//MESSAGE   DD  *                                                       
+  BUENOS DIAS,                                                          
+          Se adjuta documento con el contrato  204806384600006810.      
+                                                                        
+  UN SALUDO,                                                            
+  EXPEDIENTE CONTRATACION                                               
+                                                                          
+/*                                                                      
+//ADJUN01 DD DSN=IASI.YZ.BAT1SB60.UGAIA001.LOAD01.D%%ODATE,DISP=SHR     
+/*                                                                      
+**************************** Bottom of Data ****************************
