@@ -1,0 +1,18 @@
+//ASFSEPDX JOB ,MSGCLASS=U,CLASS=A,MSGLEVEL=(1,1)                      
+/* SYSAFF=SYS7                                                         
+//*********************************************************************
+//*  COPIO EL FICHERO CON TODAS LAS OPERACIONES PARA RECUPERACIONES  * 
+//******************************************************************** 
+//PASO200  EXEC  PGM=SORT,PARM='FLAG(I)',REGION=8M,COND=(4,LT)         
+//SYSOUT   DD SYSOUT=*                                                 
+//SORTIN   DD DSN=VAP.OPEALL.NUEVO(0),DISP=SHR                         
+//SORTOUT  DD DSN=VAP.OPEALL.NUEVO(+1),                                
+//            DISP=(,CATLG,DELETE),LABEL=(1,SL),                       
+//            UNIT=TAPESK,                                             
+//            DCB=PROD.LR806.DCB                                       
+//SYSIN    DD *                                                        
+   SORT   FIELDS=COPY                                                  
+   OUTREC FIELDS=(1,489,300X,490,16)                                   
+                                                                       
+   END                                                                 
+/*                                                                     
