@@ -1,0 +1,62 @@
+//CATAJCL1 JOB ACCTPARM,CLASS=Q,MSGCLASS=X,REGION=0M,                   
+//        MSGLEVEL=(1,1),USER=BATASI                                    
+/* SYSAFF=SYS5                                                          
+//*---------------------------------------------------------------------
+//JOBLIB    DD  DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                      
+//          DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                      
+//          DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                      
+//          DD  DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                       
+//********************************************************************//
+//STEP060  EXEC PGM=IKJEFT1A,DYNAMNBR=20                                
+//SYSIN    DD  *                                                        
+   INSERT INTO DESA.QXDTCAT                                             
+          (CAT_SUBAPLIC,                                                
+           CAT_NOMBRE,                                                  
+           CAT_TIPO,                                                    
+           CAT_FUNC,                                                    
+           CAT_IND_CRITI,                                               
+           CAT_CLASIF,                                                  
+          CAT_ENT_PROP,                                       
+         CAT_FECHA_CRE,                                      
+         CAT_USU_CRE,                                        
+         CAT_FECHA_MOD,                                      
+         CAT_USU_MOD,                                        
+         CAT_PROC_CRIT,                                      
+         CAT_FUENTE_OK,                                      
+         CAT_PROG_PRINC,                                     
+         CAT_IND_SEG,                                        
+         CAT_IND_CATAL,                                      
+         CAT_DESCRIP,                                        
+         CAT_DISPL_OLD,                                      
+         CAT_DISPL_NEW)                                      
+ VALUES ('YZ',                                               
+         'YZNC662',                                          
+         'CPY',                                              
+         'YZ',                                               
+         '00',                                               
+         'P',      
+                    '2048',                                  
+           '2021-01-18',                            
+           'ASDGVA0',                               
+           '2021-01-18',                            
+           'ASDGVA0',                               
+           'N',                                     
+           '1',                                     
+           'B',                                     
+           'S',                                     
+           'S',                                     
+           'CPY FORMATO YZME662',                   
+           '',                                      
+           '0');                                    
+/*                                                  
+//SYSTSPRT DD  SYSOUT=*                             
+//IGZSRTCD DD  DUMMY                                
+//SYSOUT   DD  SYSOUT=*                             
+//SYSPRINT DD  SYSOUT=*                             
+//SYSREC01 DD  DUMMY     
+//SYSPUNCH DD  DUMMY                                      
+//SYSTSIN  DD  *                                          
+  DSN SYS(DAST)                                           
+  RUN PROGRAM(DSNTIAUL) PLAN(DSNTIAUL) PARM ('SQL')       
+  END                                                     
+/*                                                        
