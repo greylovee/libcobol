@@ -1,0 +1,94 @@
+//YZIN1301 JOB ACCTPARM,CLASS=W,MSGCLASS=Q,                             
+//             REGION=0M,COND=(4,LT)                                    
+/* SYSAFF=SYS5                                                          
+//*                                                                     
+//****************************************************************      
+//* LIBRERIAS UTILIZADAS                                                
+//****************************************************************      
+//JOBLIB   DD  DISP=SHR,DSN=IICI.LIBEAAS.NRNTLOAD                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNEXIT                       
+//         DD  DISP=SHR,DSN=SYS1.DSNDAST.SDSNLOAD                       
+//         DD  DISP=SHR,DSN=CHGMAN.BSLA.NRNTLOAD                        
+/*                                                                      
+//**********************************************************************
+//* PASO0000: SE BORRAN LOS FICHEROS DEL PROCESO                       *
+//**********************************************************************
+//PASO0000 EXEC PGM=IDCAMS,COND=(04,LT)                                 
+//SYSPRINT DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  DELETE IASI.YZ.BAT1SB60.YZAIA040.BOTH.D%%ODATE                        
+  DELETE IASI.YZ.BAT1SB60.YZAIA040.F1.D%%ODATE                          
+  DELETE IASI.YZ.BAT1SB60.YZAIA040.F2.D%%ODATE                          
+  IF MAXCC=8 THEN SET MAXCC=0                                           
+  END                                                                   
+//**********************************************************************
+//* PASO01 SORT INCLUDE A YZDT020                                       
+//* PARA QUEDARNOS CON ESTADOS QUE NO SON 04,05,99                      
+//**********************************************************************
+//PASO01 EXEC PGM=SORT                                                  
+//SORTIN DD DSN=IASP.YZ.BAT1SB60.YZAPDS20.UNLOAD20.D%%ODATE,            
+//            DISP=SHR                                                  
+//SORTOUT DD DSN=IASI.YZ.BAT1SB60.YZAIA020.LOAD20.D%%ODATE,             
+//            DISP=(,CATLG,DELETE),                                     
+//            SPACE=(TRK,(100,15),RLSE),UNIT=SYSDA,                     
+//            DCB=*.SORTIN                                              
+//SYSOUT   DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  SORT   FIELDS=COPY                                                    
+    INCLUDE COND=(34,2,CH,NE,C'04',AND,                                   
+                34,2,CH,NE,C'05',AND,                                   
+                34,2,CH,NE,C'99')                                       
+  END                                                                   
+/*                                                                      
+//**********************************************************************
+//* PASO010                                                             
+//* JOIN CUENTAS FORMALIZADAS O EN CURSO YZDT020( ESTADOS QUE NO SON    
+//* 04,05,99) CON YZDT060, CRUZAR POR ENTIDAD, OFICINA, ACC,ACC-NUMSEC. 
+//**********************************************************************
+//SORT0010 EXEC PGM=SORT                                                
+//SORTJNF1 DD DSN=IASI.YZ.BAT1SB60.YZAIA020.LOAD20.D%%ODATE,            
+//            DISP=SHR                                                  
+//SORTJNF2 DD DSN=IASP.YZ.BAT1SB60.YZAPDS60.UNLOAD60.D%%ODATE,          
+//            DISP=SHR                                                  
+//BOTH     DD DSN=IASI.YZ.BAT1SB60.YZAIA010.BOTH.D%%ODATE,              
+//            DISP=(NEW,CATLG,CATLG),                                   
+//            SPACE=(TRK,(750,375),RLSE),RECFM=FB                       
+//* Las que Solo estan en Fichero 1                                     
+//F1       DD DSN=IASI.YZ.BAT1SB60.YZAIA010.F1.D%%ODATE,        
+//            DISP=(NEW,CATLG,CATLG),                           
+//            SPACE=(TRK,(750,375),RLSE),RECFM=FB               
+//F2       DD DSN=IASI.YZ.BAT1SB60.YZAIA010.F2.D%%ODATE,        
+//            DISP=(NEW,CATLG,CATLG),                           
+//            SPACE=(TRK,(750,375),RLSE),RECFM=FB               
+//SYSOUT   DD SYSOUT=*                                          
+  JOINKEYS FILES=F1,FIELDS=(1,4,A,5,4,A,9,10,A,19,3,A)          
+  JOINKEYS FILES=F2,FIELDS=(1,4,A,5,4,A,9,10,A,19,3,A)          
+  JOIN UNPAIRED,F1,F2                                           
+  REFORMAT FIELDS=(F1:1,250,F2:1,114,?)                         
+  OPTION DYNALLOC(SYSDA,50),COPY                                
+  OUTFIL FNAMES=BOTH,INCLUDE=(365,1,CH,EQ,C'B'),                
+  BUILD=(1,250)                                                 
+  OUTFIL FNAMES=F1,INCLUDE=(365,1,CH,EQ,C'1'),                  
+  BUILD=(1,250)                                                 
+  OUTFIL FNAMES=F2,INCLUDE=(365,1,CH,EQ,C'2'),                  
+  BUILD=(251,114)                                               
+  END                                                           
+  /*                                                                      
+//**********************************************************************
+//* PASO02 SORT INCLUDE A YZDT002                                       
+//* GARANTIA H-HIPOTECARIA Y V-PIGNORATICIA                             
+//**********************************************************************
+//PASO02 EXEC PGM=SORT                                                  
+//SORTIN DD DSN=IASP.YZ.BAT1SB15.YZAPDS02.UNLOAD02.D%%ODATE,            
+//            DISP=SHR                                                  
+//SORTOUT DD DSN=IASI.YZ.BAT1SB60.YZAIA002.LOAD02.D%%ODATE,             
+//            DISP=(,CATLG,DELETE),                                     
+//            SPACE=(TRK,(100,15),RLSE),UNIT=SYSDA,                     
+//            DCB=*.SORTIN                                              
+//SYSOUT   DD SYSOUT=*                                                  
+//SYSIN    DD *                                                         
+  SORT   FIELDS=COPY                                                    
+  INCLUDE COND=(28,1,CH,EQ,C'H',OR,                                     
+                28,1,CH,EQ,C'V',OR,                                     
+                28,1,CH,EQ,C'D')                                        
+                                                                        
